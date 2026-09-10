@@ -53,7 +53,8 @@ final class flow_test extends advanced_testcase {
 
         $auth = get_auth_plugin('emailadmin');
 
-        // Mimic the data login/signup.php would hand to user_signup.
+        // Mimic the data login/signup.php would hand to user_signup,
+        // including signup_setup_new_user() (sets confirmed, secret, auth...).
         $user = new \stdClass();
         $user->email = 'robert.sack@example.com';
         $user->password = 'ChangeMe!2026';
@@ -63,6 +64,7 @@ final class flow_test extends advanced_testcase {
         $user->country = 'AT';
         $user->lang = 'en';
         $user->username = ''; // Derived by the plugin from the email address.
+        $user = signup_setup_new_user($user);
 
         $this->assertTrue($auth->user_signup($user, false));
 

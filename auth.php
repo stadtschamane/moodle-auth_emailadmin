@@ -132,6 +132,11 @@ class auth_plugin_emailadmin extends auth_plugin_base {
         if (empty($user->username)) {
             $user->username = \auth_emailadmin\signup_form::username_from_email($user->email);
         }
+        // Defense in depth: the user must end up on this auth plugin even if
+        // the signup data was not passed through signup_setup_new_user().
+        if (empty($user->auth)) {
+            $user->auth = $this->authtype;
+        }
 
         $user->password = hash_internal_user_password($user->password);
 
