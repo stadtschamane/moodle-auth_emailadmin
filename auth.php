@@ -253,18 +253,6 @@ class auth_plugin_emailadmin extends auth_plugin_base {
     }
 
     /**
-     * Prints a form for configuring this authentication plugin.
-     *
-     * This function is called from admin/auth.php, and outputs a full page with
-     * a form for configuring this plugin.
-     *
-     * @param array $page An object containing all the data for this page.
-     */
-    public function config_form($config, $err, $user_fields) {
-        include("config.html");
-    }
-
-    /**
      * Returns whether or not the captcha element is enabled, and the admin settings fulfil its requirements.
      * @return bool
      */
@@ -276,7 +264,7 @@ class auth_plugin_emailadmin extends auth_plugin_base {
      * Send email to admin with confirmation text and activation link for
      * new user.
      *
-     * @param user $user A {@link $USER} object
+     * @param user $user A user object
      * @return bool Returns true if mail was sent OK to *any* admin and false if otherwise.
      */
     public function send_confirmation_email_support($user) {
@@ -343,7 +331,7 @@ class auth_plugin_emailadmin extends auth_plugin_base {
 
         $errors = array();
         foreach ($send_list as $admin) {
-            $use_lang = \auth_emailadmin\message::get_user_language($admin);
+            $use_lang = !empty($admin->lang) ? $admin->lang : current_language();
 
             $subject = get_string_manager()->get_string('auth_emailadminconfirmationsubject',
                                                         'auth_emailadmin',
@@ -373,10 +361,10 @@ class auth_plugin_emailadmin extends auth_plugin_base {
         }
 
         if ($error != '') {
-            error_log($error);
+            debugging($error, DEBUG_NORMAL);
             foreach ($admins as $admin) {
                 if (!in_array($admin->username, $errors)) {
-                    $use_lang = \auth_emailadmin\message::get_user_language($admin);
+                    $use_lang = !empty($admin->lang) ? $admin->lang : current_language();
 
                     $subject = get_string_manager()->get_string('auth_emailadminconfirmationsubject',
                                                                 'auth_emailadmin',
@@ -397,7 +385,7 @@ class auth_plugin_emailadmin extends auth_plugin_base {
     /**
      * Return an array with custom user properties.
      *
-     * @param user $user A {@link $USER} object
+     * @param user $user A user object
      */
     public function list_custom_fields($user) {
         global $CFG, $DB;
