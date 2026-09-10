@@ -26,7 +26,7 @@ Feature: Self registration with admin confirmation using the emailadmin auth plu
     And I should see "You are not logged in"
     # The admin received the confirmation mail; emulate the admin clicking
     # the confirm link from that mail.
-    And I confirm admin approval for "robert.sack@example.com"
+    And I confirm admin approval for "robert.sack"
     Then I should see "Your registration has been confirmed"
-    And I log in as "robert.sack@example.com"
+    And I log in as "robert.sack"
     And I log out
