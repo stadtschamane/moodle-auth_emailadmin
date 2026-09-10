@@ -79,15 +79,22 @@ class signup_form extends \login_signup_form {
         if (!empty($CFG->passwordpolicy)) {
             $mform->addElement('static', 'passwordpolicyinfo', '', print_password_policy());
         }
+        // MAX_PASSWORD_CHARACTERS was introduced in Moodle 4.3; on 4.1/4.2 the
+        // maxlength comes from the core signup form default (32).
+        if (defined('MAX_PASSWORD_CHARACTERS')) {
+            $maxlength = MAX_PASSWORD_CHARACTERS;
+        } else {
+            $maxlength = 32;
+        }
         $mform->addElement('password', 'password', get_string('password'), [
-            'maxlength' => MAX_PASSWORD_CHARACTERS,
+            'maxlength' => $maxlength,
             'size' => 12,
             'autocomplete' => 'new-password'
         ]);
         $mform->setType('password', core_user::get_property_type('password'));
         $mform->addRule('password', get_string('missingpassword'), 'required', null, 'client');
-        $mform->addRule('password', get_string('maximumchars', '', MAX_PASSWORD_CHARACTERS),
-            'maxlength', MAX_PASSWORD_CHARACTERS, 'client');
+        $mform->addRule('password', get_string('maximumchars', '', $maxlength),
+            'maxlength', $maxlength, 'client');
 
         $namefields = useredit_get_required_name_fields();
         foreach ($namefields as $field) {
