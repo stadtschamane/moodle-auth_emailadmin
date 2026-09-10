@@ -122,5 +122,5 @@ $string['privacy:metadata'] = 'The Email Admin plugin does not store user data.'
 // was removed in Moodle 4.x. The plugin form references it, so the plugin now
 // ships its own definition. Existing language customisations still override it.
 $string['createuserandpass'] = 'Choose your sign-up details';
-$string['usernamefromemail'] = 'You will sign in with this email address. Your username is derived from it automatically.';
-$string['usernamefromemail_link'] = 'Sign-up details';
+$string['usernamefromemail'] = 'Sign-in name';
+$string['usernamefromemail_help'] = 'You will sign in with this email address. Your username is derived from it automatically.';

@@ -28,5 +28,5 @@
  */
 
 $string['createuserandpass'] = 'Registrierungsdaten';
-$string['usernamefromemail'] = 'Sie melden sich mit dieser E-Mail-Adresse an. Ihr Benutzername wird automatisch daraus abgeleitet.';
-$string['usernamefromemail_link'] = 'Registrierungsdaten';
+$string['usernamefromemail'] = 'Anmeldename';
+$string['usernamefromemail_help'] = 'Sie melden sich mit dieser E-Mail-Adresse an. Ihr Benutzername wird automatisch daraus abgeleitet.';

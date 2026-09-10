@@ -33,8 +33,7 @@ use advanced_testcase;
  * @copyright 2026 onwards stadtschamane
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class signup_form_test extends advanced_testcase {
-
+final class signup_form_test extends advanced_testcase {
     /**
      * Test username derivation from email addresses.
      *
