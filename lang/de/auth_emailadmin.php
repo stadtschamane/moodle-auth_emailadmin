@@ -15,20 +15,18 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details
- * NOTE: Based on "email" by Martin Dougiamas (http://dougiamas.com)
+ * German strings for component 'auth_emailadmin'.
  *
- * @package    auth
- * @subpackage emailadmin
- * @copyright  2012 onwards Felipe Carasso (http://carassonet.org)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * Only the strings added in 1.5.0 are shipped here so they do not
+ * conflict with the official Moodle language pack; all pre-existing
+ * strings come from the official language pack and the site's language
+ * customisation.
+ *
+ * @package   auth_emailadmin
+ * @copyright 2026 onwards stadtschamane
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die;
-
-$plugin->version   = 2026091000;        // The current plugin version (YYYYMMDDXX).
-$plugin->requires  = 2017111300;        // Requires this Moodle version.
-$plugin->supported = [401, 405];        // Tested up to Moodle 4.5.
-$plugin->component = 'auth_emailadmin';      // Full name of the plugin (used for diagnostics).
-$plugin->maturity = MATURITY_STABLE;
-$plugin->release = '1.5.0';
+$string['createuserandpass'] = 'Registrierungsdaten';
+$string['usernamefromemail'] = 'Sie melden sich mit dieser E-Mail-Adresse an. Ihr Benutzername wird automatisch daraus abgeleitet.';
+$string['usernamefromemail_link'] = 'Registrierungsdaten';
