@@ -36,26 +36,17 @@ use advanced_testcase;
 final class flow_test extends advanced_testcase {
 
     /**
-     * Test the full signup -> admin confirmation -> login chain with the
-     * email-derived username.
+     * Create a signup like login/signup.php would (incl. signup_setup_new_user).
      *
-     * @covers \auth_plugin_emailadmin::user_signup
-     * @covers \auth_plugin_emailadmin::user_confirm
-     * @covers \auth_plugin_emailadmin::user_login
+     * @return \stdClass the created user record
      */
-    public function test_signup_confirm_login(): void {
+    protected function signup_test_user(): \stdClass {
         global $CFG, $DB;
         require_once($CFG->dirroot . '/auth/emailadmin/auth.php');
         require_once($CFG->dirroot . '/user/editlib.php');
 
-        $this->resetAfterTest(true);
-        $this->setAdminUser();
-        $CFG->registerauth = 'emailadmin';
-
         $auth = get_auth_plugin('emailadmin');
 
-        // Mimic the data login/signup.php would hand to user_signup,
-        // including signup_setup_new_user() (sets confirmed, secret, auth...).
         $user = new \stdClass();
         $user->email = 'robert.sack@example.com';
         $user->password = 'ChangeMe!2026';
@@ -75,10 +66,53 @@ final class flow_test extends advanced_testcase {
         $this->assertEquals(0, $newuser->confirmed, 'New user starts unconfirmed');
         $this->assertEquals('emailadmin', $newuser->auth);
 
-        // Unconfirmed user must not log in.
-        $this->assertFalse($auth->user_login('robert.sack', 'ChangeMe!2026'));
+        return $newuser;
+    }
 
-        // Admin confirms via the mail link logic.
+    /**
+     * Signup stores the user with the email-derived username and correct auth.
+     *
+     * @covers \auth_plugin_emailadmin::user_signup
+     */
+    public function test_signup_derives_username(): void {
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+        set_config('registerauth', 'emailadmin');
+        $this->signup_test_user();
+    }
+
+    /**
+     * An unconfirmed user must not be able to log in (redirect to login page).
+     *
+     * @covers \auth_plugin_emailadmin::user_login
+     */
+    public function test_unconfirmed_login_rejected(): void {
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+        set_config('registerauth', 'emailadmin');
+        $this->signup_test_user();
+
+        $auth = get_auth_plugin('emailadmin');
+        // user_login() redirects to the login page with an "awaiting approval"
+        // notice; in CLI context redirect() throws.
+        $this->expectException(\moodle_exception::class);
+        $auth->user_login('robert.sack', 'ChangeMe!2026');
+    }
+
+    /**
+     * After admin confirmation the user can log in with the derived username.
+     *
+     * @covers \auth_plugin_emailadmin::user_confirm
+     * @covers \auth_plugin_emailadmin::user_login
+     */
+    public function test_confirm_then_login(): void {
+        global $DB;
+        $this->resetAfterTest(true);
+        $this->setAdminUser();
+        set_config('registerauth', 'emailadmin');
+        $newuser = $this->signup_test_user();
+
+        $auth = get_auth_plugin('emailadmin');
         $this->assertEquals(AUTH_CONFIRM_OK, $auth->user_confirm('robert.sack', $newuser->secret));
         $newuser = $DB->get_record('user', ['username' => 'robert.sack']);
         $this->assertEquals(1, $newuser->confirmed, 'User confirmed by admin');

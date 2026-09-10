@@ -36,4 +36,8 @@ Feature: Self registration with admin confirmation using the emailadmin auth plu
     And I set the field "Username" to "robert.sack"
     And I set the field "Password" to "ChangeMe!2026"
     And I press "Log in"
-    Then I should be logged in as "Robert Sack"
+    # Login succeeded if we can open the profile in edit mode (core signup
+    # feature uses the same final check).
+    And I open my profile in edit mode
+    And the field "First name" matches value "Robert"
+    And I log out
