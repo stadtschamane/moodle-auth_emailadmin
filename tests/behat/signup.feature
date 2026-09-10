@@ -19,7 +19,7 @@ Feature: Self registration with admin confirmation using the emailadmin auth plu
       | Email (again) | robert.sack@example.com |
       | Password      | ChangeMe!2026           |
       | First name    | Robert                  |
-      | Surname       | Sack                    |
+      | Last name     | Sack                    |
     And I press "Create my new account"
     Then I should see "Your account has been registered and is pending confirmation by the administrator."
     And I press "Continue"
