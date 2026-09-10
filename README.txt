@@ -11,6 +11,11 @@ Email body is customizable within the language file.
 
 Based on the standard email-based self-registration module.
 
+## Version 1.5.1 (2026)
+
+* Version number raised above all known fork variants (20301101xx) so the
+  maintained build installs as an upgrade over them.
+
 ## Version 1.5.0 (2026)
 
 Maintained fork for Moodle 4.1 - 4.5:

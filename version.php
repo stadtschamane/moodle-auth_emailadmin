@@ -26,9 +26,9 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version   = 2026091000;        // The current plugin version (YYYYMMDDXX).
+$plugin->version   = 2030110200;        // Above all fork variants (original 2030105080, eummena/ewallah 20301101xx).
 $plugin->requires  = 2017111300;        // Requires this Moodle version.
 $plugin->supported = [401, 405];        // Tested up to Moodle 4.5.
 $plugin->component = 'auth_emailadmin';      // Full name of the plugin (used for diagnostics).
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = '1.5.0';
+$plugin->release = '1.5.1';
