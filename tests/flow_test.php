@@ -46,6 +46,7 @@ final class flow_test extends advanced_testcase {
     public function test_signup_confirm_login(): void {
         global $CFG, $DB;
         require_once($CFG->dirroot . '/auth/emailadmin/auth.php');
+        require_once($CFG->dirroot . '/user/editlib.php');
 
         $this->resetAfterTest(true);
         $this->setAdminUser();

@@ -36,5 +36,4 @@ Feature: Self registration with admin confirmation using the emailadmin auth plu
     And I set the field "Username" to "robert.sack"
     And I set the field "Password" to "ChangeMe!2026"
     And I press "Log in"
-    Then I should see "You are logged in as"
-    And I log out
+    Then I should be logged in as "Robert Sack"
