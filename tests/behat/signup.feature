@@ -25,8 +25,16 @@ Feature: Self registration with admin confirmation using the emailadmin auth plu
     And I press "Continue"
     And I should see "You are not logged in"
     # The admin received the confirmation mail; emulate the admin clicking
-    # the confirm link from that mail.
+    # the confirm link while logged in (confirm.php requires an admin
+    # session, see ISSUE-26 guard).
+    And I log in as "admin"
     And I confirm admin approval for "robert.sack"
     Then I should see "Your registration has been confirmed"
-    And I log in as "robert.sack"
+    And I log out
+    # The confirmed user logs in with the derived username.
+    And I follow "Log in"
+    And I set the field "Username" to "robert.sack"
+    And I set the field "Password" to "ChangeMe!2026"
+    And I press "Log in"
+    Then I should see "You are logged in as"
     And I log out
