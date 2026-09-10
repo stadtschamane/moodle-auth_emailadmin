@@ -6,8 +6,9 @@ Feature: Self registration with admin confirmation using the emailadmin auth plu
 
   Background:
     Given the following config values are set as admin:
-      | registerauth   | emailadmin |
-      | passwordpolicy | 0          |
+      | registerauth   | emailadmin              |
+      | auth           | manual,email,emailadmin |
+      | passwordpolicy | 0                       |
 
   Scenario: Sign up with email as username, admin confirms, user can log in
     Given I am on site homepage
