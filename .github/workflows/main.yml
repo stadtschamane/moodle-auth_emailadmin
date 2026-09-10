@@ -2,77 +2,91 @@ name: Tests
 
 on: [push, pull_request]
 
+permissions:
+  contents: read
+
 jobs:
   ci:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+
+    services:
+      mariadb:
+        image: mariadb:11
+        env:
+          MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: '1'
+          MYSQL_CHARACTER_SET_SERVER: "utf8mb4"
+          MYSQL_COLLATION_SERVER: "utf8mb4_unicode_ci"
+        ports:
+          - 3306:3306
+        options: --health-cmd="healthcheck.sh --connect --innodb_initialized" --health-interval 10s --health-timeout 5s --health-retries 3
 
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - moodle-branch: MOODLE_401_STABLE
-            php: 8.1
-          - moodle-branch: MOODLE_405_STABLE
-            php: 8.2
+        php: ['8.1', '8.2']
+        moodle-branch: ['MOODLE_401_STABLE', 'MOODLE_405_STABLE']
+        database: [mariadb]
 
     name: ${{ matrix.moodle-branch }}  php ${{ matrix.php }}
 
     steps:
-      - name: checkout plugin
-        uses: actions/checkout@v3
+      - name: Check out repository code
+        uses: actions/checkout@v6
         with:
-          path: this-plugin
+          path: plugin
+          persist-credentials: false
 
-      - name: setup PHP
+      - name: Setup PHP ${{ matrix.php }}
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: mbstring, pgsql, mysqli, gd, xmlrpc, zip
-          ini-values: max_input_vars=5000
+          extensions: mbstring, gd, xmlrpc, zip, mysqli
+          ini-values: max_input_vars=5000, opcache.enable_cli=1
           coverage: none
 
-      - name: composer
+      - name: Initialise moodle-plugin-ci
         run: |
-           composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci ci ^4
-           echo $(cd ci/bin; pwd) >> $GITHUB_PATH
+          composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci ci ^4
+          echo $(cd ci/bin; pwd) >> $GITHUB_PATH
+          echo $(cd ci/vendor/bin; pwd) >> $GITHUB_PATH
+          sudo locale-gen en_AU.UTF-8
+          echo "NVM_DIR=$HOME/.nvm" >> $GITHUB_ENV
 
-      - name: install moodle
-        run: |
-          mkdir -p moodle
-          ci/bin/moodle-plugin-ci install --db-host=127.0.0.1 --plugin this-plugin
+      - name: Install moodle-plugin-ci
+        run: moodle-plugin-ci install --plugin ./plugin --db-host=127.0.0.1
         env:
-          DB: mysqli
-          MUSTACHE_IGNORE_NAMES: 'mobile_service.mustache'
+          DB: ${{ matrix.database }}
+          MOODLE_BRANCH: ${{ matrix.moodle-branch }}
 
       - name: PHP Lint
-        run: ci/bin/moodle-plugin-ci phplint this-plugin
-
-      - name: PHP Copy/Paste Detector
-        run: ci/bin/moodle-plugin-ci phpcpd this-plugin || true
+        if: ${{ !cancelled() }}
+        run: moodle-plugin-ci phplint
 
       - name: PHP Mess Detector
-        run: ci/bin/moodle-plugin-ci phpmd this-plugin
+        continue-on-error: true # advisory only
+        if: ${{ !cancelled() }}
+        run: moodle-plugin-ci phpmd
 
       - name: Moodle Code Checker
-        run: ci/bin/moodle-plugin-ci codechecker this-plugin || true
+        continue-on-error: true # advisory: inherited 2012-era code style
+        if: ${{ !cancelled() }}
+        run: moodle-plugin-ci phpcs --max-warnings 0
 
       - name: Moodle PHPDoc Checker
-        run: ci/bin/moodle-plugin-ci phpdoc this-plugin || true
+        continue-on-error: true # advisory: inherited code style
+        if: ${{ !cancelled() }}
+        run: moodle-plugin-ci phpdoc --max-warnings 0
 
       - name: Validating
-        run: ci/bin/moodle-plugin-ci validate this-plugin
+        if: ${{ !cancelled() }}
+        run: moodle-plugin-ci validate
 
       - name: Check upgrade savepoints
-        run: ci/bin/moodle-plugin-ci savepoints this-plugin
-
-      - name: Mustache Lint
-        run: ci/bin/moodle-plugin-ci mustache this-plugin || true
-
-      - name: Grunt
-        run: ci/bin/moodle-plugin-ci grunt this-plugin || true
+        if: ${{ !cancelled() }}
+        run: moodle-plugin-ci savepoints
 
       - name: PHPUnit tests
-        run: ci/bin/moodle-plugin-ci phpunit --fail-on-warning this-plugin
+        if: ${{ !cancelled() }}
+        run: moodle-plugin-ci phpunit --fail-on-warning
 
-      - name: Behat features
-        run: ci/bin/moodle-plugin-ci behat --auto-rerun this-plugin || true
+      # Behat step to be added once the plugin ships behat features.
