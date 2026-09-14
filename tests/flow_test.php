@@ -53,6 +53,7 @@ final class flow_test extends advanced_testcase {
         $user->firstname = 'Robert';
         $user->lastname = 'Sack';
         $user->city = 'Vienna';
+        $user->institution = 'Schrack Seconet';
         $user->country = 'AT';
         $user->lang = 'en';
         $user->username = ''; // Derived by the plugin from the email address.
@@ -63,6 +64,7 @@ final class flow_test extends advanced_testcase {
         $newuser = $DB->get_record('user', ['username' => 'robert.sack']);
         $this->assertNotEmpty($newuser, 'User was created with the derived username');
         $this->assertEquals('robert.sack@example.com', $newuser->email);
+        $this->assertEquals('Schrack Seconet', $newuser->institution, 'Signup stores the institution field');
         $this->assertEquals(0, $newuser->confirmed, 'New user starts unconfirmed');
         $this->assertEquals('emailadmin', $newuser->auth);
 

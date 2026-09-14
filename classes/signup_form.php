@@ -50,7 +50,7 @@ class signup_form extends \login_signup_form {
      * Build the signup form without a username element.
      *
      * Field order mirrors the patched production form: email, email2,
-     * password, name fields, city, country, profile fields, captcha,
+     * password, name fields, institution, country, profile fields, captcha,
      * site policy, buttons. All other behaviour (validation, captcha,
      * site policy, profile fields, rendering) is inherited unchanged.
      */
@@ -107,11 +107,11 @@ class signup_form extends \login_signup_form {
             $mform->addRule($field, get_string($stringid), 'required', null, 'client');
         }
 
-        $mform->addElement('text', 'city', get_string('city'), 'maxlength="120" size="20"');
-        $mform->setType('city', core_user::get_property_type('city'));
-        if (!empty($CFG->defaultcity)) {
-            $mform->setDefault('city', $CFG->defaultcity);
-        }
+        // Institution instead of the core "city" field: Schrack Seconet
+        // trainees enter their company, the standard user table column
+        // "institution" (labelled "Institution") stores it natively.
+        $mform->addElement('text', 'institution', get_string('institution'), 'maxlength="255" size="40"');
+        $mform->setType('institution', PARAM_TEXT);
 
         $country = get_string_manager()->get_list_of_countries();
         $defaultcountry = [];
